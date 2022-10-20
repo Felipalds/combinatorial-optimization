@@ -24,7 +24,6 @@ class Algorithm:
             self.current_population_fitness += round(current_individual.fitness, DECIMAL)
         print("First generation")
 
-
     def generateIndividualPercentage(self):
         for i in range(0, self.pop_size):
             self.current_population[i].setPercentage(self.current_population[i].getFitness() * 100 / self.current_population_fitness)
@@ -50,6 +49,7 @@ class Algorithm:
 
     def generateNextGeneration(self):
         # elitism
+
         for i in range(self.pop_size):
             child = self.crossingPopulation()
             while(child == None):
@@ -57,6 +57,7 @@ class Algorithm:
 
             self.next_population.append(child)
         print("Next generation generated")
+
 
     def rouletteSelection(self):
         selected = None
@@ -67,6 +68,7 @@ class Algorithm:
                 if i and selectedChance < i.individual_percentage:
                     selected = i
                     return selected
+
 
     def showIndividuals(self):
         for i in range(self.pop_size):
