@@ -2,14 +2,19 @@ from math import *
 import random
 from Individual import Individual
 import numpy as np
+import threading
+
 
 
 class Algorithm:
 
-    def __init__(self, init_population=None, auto_gen=True) -> None:
+    def __init__(self,init_population=None, auto_gen=True) -> None:
 
         self.pop_size = int(input("Population size: "))
         self.generation_times = int(input("Generaion times: "))
+
+        #self.generation_times = generation_times
+        #self.pop_size = pop_size
 
         self.population = init_population
         self.nxt_population = []
@@ -43,6 +48,14 @@ class Algorithm:
         for i in range(self.pop_size):
             self.population[i].setPercentage(self.population[i].getFitness() * 100 / self.getFitSum())
 
+    def definer(self, value, M, m):
+        if value > M:
+            return M
+        elif value < m:
+            return M
+        else:
+            return value
+
     def crossPopulation(self) -> list[Individual]:
 
         childs = []
@@ -58,37 +71,31 @@ class Algorithm:
         cross_change_A = random.uniform(0, 1) #used is 75
         cross_change_B = random.uniform(0, 1) #used is 75
 
-        print("BETA :",beta)
-        print("CROSS CHANGE :", cross_change_A)
-
         if(cross_change_A < 0.75):
-            print("Parent A x: ", parentA.x)
-            print("Parent B x: ", parentB.x)
-
-            print("Parent A y: ", parentA.y)
-            print("Parent B y: ", parentB.y)
             childA_x = beta * parentA.x + (1 - beta) * parentB.x
+            childA_x = self.definer(childA_x, 0.5, 0)
             childA_y = beta * parentA.y + (1 - beta) * parentB.y
-            print("CHILD A X before", childA_x)
-            print("CHILD A Y before", childA_y)
-
-            normX = np.random.normal(0, 0.00005)
-            print("NORMAL DISTRIBUITION", normX)
+            childA_y = self.definer(childA_y, 0.5, 0)
+            normX = np.random.normal(0, 0.0005)
 
             childA_x += normX
+            childA_x = self.definer(childA_x, 0.5, 0)
             childA_y += normX
-
-            print("NEW X AFTER D DIST: ", childA_x)
-            print("NEW y AFTER D DIST: ", childA_y)
+            childA_y = self.definer(childA_y, 0.5, 0)
 
             childA = Individual(childA_x, childA_y)
             childs.append(childA)
 
         if(cross_change_B < 0.75):
             childB_x = beta * parentB.x + (1 - beta) * parentA.x
+            childB_x = self.definer(childB_x, 0.5, 0)
             childB_y = beta * parentB.y + (1 - beta) * parentA.y
-            childB_x += np.random.normal(0, 0.2)
-            childB_y += np.random.normal(0, 0.2)
+            childB_y = self.definer(childB_y, 0.5, 0)
+            childB_x += np.random.normal(0, 0.0005)
+            childB_x = self.definer(childB_x, 0.5, 0)
+            childB_y += np.random.normal(0, 0.0005)
+            childB_y = self.definer(childB_y, 0.5, 0)
+
             childB = Individual(childB_x, childB_y)
             childs.append(childB)
 
@@ -138,21 +145,26 @@ class Algorithm:
     def steadyRun(self, status_show : bool = True):
         for i in range(self.generation_times):
             if status_show: print(f"Generation {i}")
-            #self.showIndividuals(100)
+            self.showIndividuals(self.pop_size)
             self.generateNextGeneration()
             self.population = list(self.nxt_population)
             self.nxt_population = []
             self.setPercentages()
 
+bestbois = []
+lastbois = []
+for i in range(1):
+    algorithm = Algorithm()
+    #algorithm.showIndividuals()
 
+    algorithm.steadyRun()
 
-algorithm = Algorithm()
-#algorithm.showIndividuals()
+    algorithm.showStatus()
+    print("X ", algorithm.best_individual.x)
+    print("Y ",algorithm.best_individual.y)
+    print("FITNESS", algorithm.best_individual.fitness)
+    lastbois.append([i, algorithm.population[-1].x, algorithm.population[-1].y])
+    bestbois.append([i, algorithm.best_individual.x, algorithm.best_individual.y])
 
-algorithm.steadyRun()
-
-algorithm.showIndividuals(50)
-algorithm.showStatus()
-print("X ", algorithm.best_individual.x)
-print("Y ",algorithm.best_individual.y)
-print("FITNESS", algorithm.best_individual.fitness)
+print(bestbois)
+print(lastbois)
