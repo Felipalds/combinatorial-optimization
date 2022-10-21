@@ -1,48 +1,54 @@
 from math import *
-from pickle import POP_MARK
 import random
 from Individual import Individual
 DECIMAL = 4
 
-
 class Algorithm:
-    current_population = []
-    next_population = []
-    current_population_fitness = 0
 
-    def __init__(self, pop_size) -> None:
+    def __init__(self, init_population=None, pop_size=100, auto_gen=True, rounder=4) -> None:
+        self.rounder = rounder
+        self.population = init_population
+        self.nxt_population = []
+        self.fitsum = 0
         self.pop_size = pop_size
-        self.generateFirstPopulation()
-        self.generateIndividualPercentage()
+        if not init_population:
+            self.population = []
+        #
+        if auto_gen and len(self.population) == 0:
+            self.generatePopulation()
+        self.setPercentages()
 
-    def generateFirstPopulation(self):
+    def getFitSum(self):
+        self.fitsum = sum([ind.getFitness() for ind in self.population])
+        return self.fitsum
+
+    def setPopulation(self, array_like):
+        self.pop_size = len(array_like)
+        self.population = array_like
+
+    def generatePopulation(self, space=[0, 0.5].copy()):
         for i in range(self.pop_size):
-            current_x = round(float(random.uniform(0, 0.5)), DECIMAL)
-            current_y = round(float(random.uniform(0, 0.5)), DECIMAL)
-            current_individual = Individual(current_x, current_y)
-            self.current_population.append(current_individual)
-            self.current_population_fitness += round(current_individual.fitness, DECIMAL)
-        print("First generation")
+            genX = round(random.uniform(*space), self.rounder)
+            genY = round(random.uniform(*space), self.rounder)
+            ind = Individual(genX, genY)
+            self.population.append(ind)
+        self.setPercentages()
 
-    def generateIndividualPercentage(self):
-        for i in range(0, self.pop_size):
-            self.current_population[i].setPercentage(self.current_population[i].getFitness() * 100 / self.current_population_fitness)
+    def setPercentages(self):
+        for i in range(self.pop_size):
+            self.population[i].setPercentage(self.population[i].getFitness() * 100 / self.getFitSum())
 
-    def crossingPopulation(self):
-        self.generateIndividualPercentage()
+    def crossPopulation(self, beta : float = None) -> Individual:
+        parentA = self.rouletteSelection()
+        parentB = self.rouletteSelection()
 
-        parent1 = self.rouletteSelection()
-        parent2 = self.rouletteSelection()
-
-        if(parent1 == parent2):
+        if parentA == parentB or not parentA or not parentB:
             return None
-
-        if(parent1 == None or parent2 == None):
-            return None
-
-        beta = round(float(random.uniform(0, 1)), DECIMAL)
-        fx = beta*parent1.x + (1-beta)*parent2.x
-        fy = beta*parent1.y + (1-beta)*parent2.y
+        
+        if not beta:
+            beta = round(random.uniform(0, 1), self.rounder)
+        fx = round(beta*parentA.x + (1-beta)*parentB.x, self.rounder)
+        fy = round(beta*parentA.y + (1-beta)*parentB.y, self.rounder)
 
         child = Individual(fx, fy)
         return child
@@ -51,54 +57,48 @@ class Algorithm:
         # elitism
 
         for i in range(self.pop_size):
-            child = self.crossingPopulation()
+            child = self.crossPopulation()
             while(child == None):
-                child = self.crossingPopulation()
+                child = self.crossPopulation()
 
-            self.next_population.append(child)
-        print("Next generation generated")
-
+            self.nxt_population.append(child)
+            #print(f"Got child.{i}")
 
     def rouletteSelection(self):
-        selected = None
-        while not selected:
-            for i in (self.current_population):
-                selectedChance = random.randrange(0, 100)
-                
-                if i and selectedChance < i.individual_percentage:
-                    selected = i
-                    return selected
+        sumChance = 0
+        for ind in (self.population):
+            selectedChance = round(random.uniform(0, 100), self.rounder)
+            sumChance += ind.getPercentage()
+            if ind and selectedChance < sumChance:
+                return ind
+        return None
 
-
-    def showIndividuals(self):
-        for i in range(self.pop_size):
-            print(f"Elemento {i}")
-            print("Elemento X", self.current_population[i].x)
-            print("Elemento Y", self.current_population[i].y)
-            print("Fitness: ", self.current_population[i].fitness)
-            print("Percentage: ", self.current_population[i].getPercentage())
+    def showIndividuals(self, amount):
+        if not amount:
+            amount = self.pop_size
+        for i in range(amount):
+            print("Elemento", i)
+            print("Elemento X", self.population[i].x)
+            print("Elemento Y", self.population[i].y)
+            print("Fitness: ", self.population[i].fitness)
+            print("Percentage: ", self.population[i].getPercentage())
 
     def showStatus(self):
         print("Population size: ", self.pop_size)
-        print("Total fitness: ", self.current_population_fitness)
+        print("Total fitness: ", self.getFitSum())
 
+    def steadyRun(self, i_times : int = 100, status_show : bool = True):
+        for i in range(i_times):
+            if status_show: print(f"Generation {i}", [f"{self.population.index(i)}X:{i.x}Y:{i.y}" for i in self.population])
+            self.generateNextGeneration()
+            self.population = list(self.nxt_population)
+            self.nxt_population = []
+            self.setPercentages()
 
-
-algorithm = Algorithm(100)
+algorithm = Algorithm(pop_size=100)
 #algorithm.showIndividuals()
 
+algorithm.steadyRun(100, status_show=False)
 
-for i in range(0, 100):
-    algorithm.crossingPopulation()
-    algorithm.generateNextGeneration()
-    print(i, "generated")
-
-    algorithm.current_population = []
-    for i in range(0, 100):
-        algorithm.current_population.append(algorithm.next_population[i])
-    algorithm.next_population = []
-    
-
-algorithm.generateIndividualPercentage()
-algorithm.showIndividuals()
+algorithm.showIndividuals(100)
 algorithm.showStatus()
