@@ -95,10 +95,10 @@ class Algorithm:
             self.nxt_population = []
             self.setPercentages()
 
-algorithm = Algorithm()
+algorithm = Algorithm(pop_size=100)
 #algorithm.showIndividuals()
 
-algorithm.steadyRun(100, status_show=True)
-"""
+algorithm.steadyRun(100, status_show=False)
+
 algorithm.showIndividuals(100)
-algorithm.showStatus()"""
+algorithm.showStatus()
