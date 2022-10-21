@@ -2,15 +2,15 @@ from math import *
 
 class Individual:
 
-    def __init__(self, x, y, rounder : int = 4) -> None:
+    def __init__(self, x, y) -> None:
         self.x = x
         self.y = y
         self.individual_percentage = None
-        self.fitness = round((self.x * sin(4 * pi * self.x) - self.y * sin(4 * pi * self.y + pi) + 1), rounder)
-        self.rounder = rounder
+        self.fitness = (self.x * sin(4 * pi * self.x) - self.y * sin(4 * pi * self.y + pi) + 1)
+
 
     def setPercentage(self, percentage) -> None:
-        self.individual_percentage = round(percentage, self.rounder)
+        self.individual_percentage = percentage
 
     def getFitness(self) -> float:
         return self.fitness
