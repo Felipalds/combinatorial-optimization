@@ -1,6 +1,8 @@
 from math import *
 import random
 from Individual import Individual
+import numpy as np
+
 
 class Algorithm:
 
@@ -56,15 +58,37 @@ class Algorithm:
         cross_change_A = random.uniform(0, 1) #used is 75
         cross_change_B = random.uniform(0, 1) #used is 75
 
+        print("BETA :",beta)
+        print("CROSS CHANGE :", cross_change_A)
+
         if(cross_change_A < 0.75):
+            print("Parent A x: ", parentA.x)
+            print("Parent B x: ", parentB.x)
+
+            print("Parent A y: ", parentA.y)
+            print("Parent B y: ", parentB.y)
             childA_x = beta * parentA.x + (1 - beta) * parentB.x
             childA_y = beta * parentA.y + (1 - beta) * parentB.y
+            print("CHILD A X before", childA_x)
+            print("CHILD A Y before", childA_y)
+
+            normX = np.random.normal(0, 0.00005)
+            print("NORMAL DISTRIBUITION", normX)
+
+            childA_x += normX
+            childA_y += normX
+
+            print("NEW X AFTER D DIST: ", childA_x)
+            print("NEW y AFTER D DIST: ", childA_y)
+
             childA = Individual(childA_x, childA_y)
             childs.append(childA)
 
         if(cross_change_B < 0.75):
             childB_x = beta * parentB.x + (1 - beta) * parentA.x
             childB_y = beta * parentB.y + (1 - beta) * parentA.y
+            childB_x += np.random.normal(0, 0.2)
+            childB_y += np.random.normal(0, 0.2)
             childB = Individual(childB_x, childB_y)
             childs.append(childB)
 
@@ -125,7 +149,7 @@ class Algorithm:
 algorithm = Algorithm()
 #algorithm.showIndividuals()
 
-algorithm.steadyRun(100)
+algorithm.steadyRun()
 
 algorithm.showIndividuals(50)
 algorithm.showStatus()
