@@ -2,8 +2,6 @@ from math import *
 import random
 from Individual import Individual
 import numpy as np
-import threading
-
 
 
 class Algorithm:
@@ -107,7 +105,7 @@ class Algorithm:
 
         self.nxt_population.append(self.elite)
 
-        while(len(self.nxt_population) <= self.pop_size):
+        while(len(self.nxt_population) != self.pop_size):
             childs = self.crossPopulation()
             while(len(childs) == 0):
                 childs = self.crossPopulation()
@@ -115,13 +113,15 @@ class Algorithm:
             for child in childs:
                 if(child.fitness > self.best_individual.getFitness()): self.best_individual = child
                 if(child.fitness > self.elite.getFitness()): self.elite = child
-                self.nxt_population.append(child)
+                if len(self.nxt_population) < self.pop_size:
+                    self.nxt_population.append(child)
 
             #print(f"Got child.{i}")
 
     def rouletteSelection(self):
+        self.setPercentages()
         sumChance = 0
-        for ind in (self.population):
+        for ind in self.population:
             selectedChance = random.uniform(0, 100)
             sumChance += ind.getPercentage()
             if ind and selectedChance < sumChance:
@@ -144,8 +144,8 @@ class Algorithm:
 
     def steadyRun(self, status_show : bool = True):
         for i in range(self.generation_times):
-            if status_show: print(f"Generation {i}")
-            self.showIndividuals(self.pop_size)
+            print(f"Generation {i}")
+            if status_show: self.showIndividuals(self.pop_size)
             self.generateNextGeneration()
             self.population = list(self.nxt_population)
             self.nxt_population = []
@@ -157,7 +157,7 @@ for i in range(1):
     algorithm = Algorithm()
     #algorithm.showIndividuals()
 
-    algorithm.steadyRun()
+    algorithm.steadyRun(status_show=False)
 
     algorithm.showStatus()
     print("X ", algorithm.best_individual.x)
