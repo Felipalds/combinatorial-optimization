@@ -2,7 +2,8 @@ from math import *
 import random
 from Individual import Individual
 import numpy as np
-
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
 
 class Algorithm:
 
@@ -107,8 +108,8 @@ class Algorithm:
 
         while(len(self.nxt_population) != self.pop_size):
             childs = self.crossPopulation()
-            while(len(childs) == 0):
-                childs = self.crossPopulation()
+            #while(len(childs) == 0):
+            #    childs = self.crossPopulation()
 
             for child in childs:
                 if(child.fitness > self.best_individual.getFitness()): self.best_individual = child
@@ -126,6 +127,7 @@ class Algorithm:
             sumChance += ind.getPercentage()
             if ind and selectedChance < sumChance:
                 return ind
+        print("Got None")
         return None
 
     def showIndividuals(self, amount):
@@ -150,6 +152,16 @@ class Algorithm:
             self.population = list(self.nxt_population)
             self.nxt_population = []
             self.setPercentages()
+        fig = plt.figure()
+        ax = plt.axes(projection="3d")
+        x = [i.x for i in self.population]
+        y = [i.y for i in self.population]
+        z = [i.getFitness() for i in self.population]
+        ax.plot3D(x, y, z, 'red')
+        plt.figure(2)
+        axB = plt.axes(projection="3d")
+        axB.scatter3D(x, y, z, c=z, cmap="cividis")
+        plt.show()
 
 bestbois = []
 lastbois = []
