@@ -1,29 +1,38 @@
 from math import *
 import random
-from Individual import Individual
+from individual import Individual
 import numpy as np
 import matplotlib.pyplot as plt
 
 class Algorithm:
 
-    def __init__(self,init_population=None, auto_gen=True) -> None:
-
-        self.pop_size = int(input("Population size: "))
-        self.generation_times = int(input("Generaion times: "))
-
-        #self.generation_times = generation_times
-        #self.pop_size = pop_size
+    def __init__(self, init_population = None, pop_size : int = 50, epochs : int = 300, auto_gen : bool = True) -> None:
+        # Parameters:
+        # init_population -> Is the first population dealt by the algorithm, defaults to None.
+        # auto_gen -> If passed as True, and no init_population value is passed, then a random population will be generated for the initial population.
+        # pop_size -> Integer value that defines the size of the populations to be handled.
+        # epochs -> Integer value that defines the amounts of epochs (or generations) to be calculated.
+        self.generations = []
+        self.pop_size = pop_size
+        self.generation_times = epochs
 
         self.population = init_population
         self.nxt_population = []
         self.fitsum = 0
         self.best_individual = Individual(0.0001, 0.0001)
         self.elite = Individual(0.0001, 0.0001)
+
+        # Defines an empty population in case of null value given
         if not init_population:
             self.population = []
-        #
+        else:
+            self.generations.append(init_population)
+        # Generates the initial population in case of a given null value, and selected auto_gen.
         if auto_gen and len(self.population) == 0:
             self.generatePopulation()
+            self.generations.append(self.population)
+
+        
 
     def getFitSum(self):
         self.fitsum = sum([ind.getFitness() for ind in self.population])
@@ -111,8 +120,8 @@ class Algorithm:
             #    childs = self.crossPopulation()
 
             for child in childs:
-                if(child.fitness > self.best_individual.getFitness()): self.best_individual = child
-                if(child.fitness > self.elite.getFitness()): self.elite = child
+                if(child.getFitness() > self.best_individual.getFitness()): self.best_individual = child
+                if(child.getFitness() > self.elite.getFitness()): self.elite = child
                 if len(self.nxt_population) < self.pop_size:
                     self.nxt_population.append(child)
 
@@ -129,7 +138,7 @@ class Algorithm:
         print("Got None")
         return None
 
-    def showIndividuals(self, amount):
+    def showIndividuals(self, amount : int = None):
         if not amount:
             amount = self.pop_size
         for i in range(amount):
@@ -144,55 +153,12 @@ class Algorithm:
         print("Total fitness: ", self.getFitSum())
 
     def steadyRun(self, status_show : bool = True):
-        fig = plt.figure()
-        ax = plt.axes(projection="3d")
-        ax.set_xlim(0.5)
-        ax.set_ylim(0.5)
-        ax.set_zlim(0.5)
-        x = [i.x for i in self.population]
-        y = [i.y for i in self.population]
-        z = [i.getFitness() for i in self.population]
-        ln = ax.scatter3D(x, y, z, "cividis", animated=True)
-        plt.show(block=False)
-        plt.pause(0.01)
-        bg = fig.canvas.copy_from_bbox(fig.bbox)
-        ax.draw_artist(ln)
-        fig.canvas.blit(fig.bbox)
         for i in range(self.generation_times):
             print(f"Generation {i}")
             if status_show: self.showIndividuals(self.pop_size)
             self.generateNextGeneration()
             self.population = list(self.nxt_population)
+            self.generations.append(self.population)
             self.nxt_population = []
             self.setPercentages()
-            x = [i.x for i in self.population]
-            y = [i.y for i in self.population]
-            z = [i.getFitness() for i in self.population]
-            #fig.canvas.restore_region(bg)
-            ln = ax.scatter3D(x, y, z, "cividis", animated=True)
-            ax.draw_artist(ln)
-            fig.canvas.blit(fig.bbox)
-            #fig.canvas.flush_events()
-            plt.pause(0.1)
 
-            
-
-            
-
-bestbois = []
-lastbois = []
-for i in range(1):
-    algorithm = Algorithm()
-    #algorithm.showIndividuals()
-
-    algorithm.steadyRun(status_show=True)
-
-    algorithm.showStatus()
-    print("X ", algorithm.best_individual.x)
-    print("Y ",algorithm.best_individual.y)
-    print("FITNESS", algorithm.best_individual.fitness)
-    lastbois.append([i, algorithm.population[-1].x, algorithm.population[-1].y])
-    bestbois.append([i, algorithm.best_individual.x, algorithm.best_individual.y])
-
-print(bestbois)
-print(lastbois)
