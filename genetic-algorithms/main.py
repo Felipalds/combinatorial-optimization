@@ -3,7 +3,6 @@ import random
 from Individual import Individual
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
 
 class Algorithm:
 
@@ -145,6 +144,20 @@ class Algorithm:
         print("Total fitness: ", self.getFitSum())
 
     def steadyRun(self, status_show : bool = True):
+        fig = plt.figure()
+        ax = plt.axes(projection="3d")
+        ax.set_xlim(0.5)
+        ax.set_ylim(0.5)
+        ax.set_zlim(0.5)
+        x = [i.x for i in self.population]
+        y = [i.y for i in self.population]
+        z = [i.getFitness() for i in self.population]
+        ln = ax.scatter3D(x, y, z, "cividis", animated=True)
+        plt.show(block=False)
+        plt.pause(0.01)
+        bg = fig.canvas.copy_from_bbox(fig.bbox)
+        ax.draw_artist(ln)
+        fig.canvas.blit(fig.bbox)
         for i in range(self.generation_times):
             print(f"Generation {i}")
             if status_show: self.showIndividuals(self.pop_size)
@@ -152,16 +165,19 @@ class Algorithm:
             self.population = list(self.nxt_population)
             self.nxt_population = []
             self.setPercentages()
-        fig = plt.figure()
-        ax = plt.axes(projection="3d")
-        x = [i.x for i in self.population]
-        y = [i.y for i in self.population]
-        z = [i.getFitness() for i in self.population]
-        ax.plot3D(x, y, z, 'red')
-        plt.figure(2)
-        axB = plt.axes(projection="3d")
-        axB.scatter3D(x, y, z, c=z, cmap="cividis")
-        plt.show()
+            x = [i.x for i in self.population]
+            y = [i.y for i in self.population]
+            z = [i.getFitness() for i in self.population]
+            #fig.canvas.restore_region(bg)
+            ln = ax.scatter3D(x, y, z, "cividis", animated=True)
+            ax.draw_artist(ln)
+            fig.canvas.blit(fig.bbox)
+            #fig.canvas.flush_events()
+            plt.pause(0.1)
+
+            
+
+            
 
 bestbois = []
 lastbois = []
@@ -169,7 +185,7 @@ for i in range(1):
     algorithm = Algorithm()
     #algorithm.showIndividuals()
 
-    algorithm.steadyRun(status_show=False)
+    algorithm.steadyRun(status_show=True)
 
     algorithm.showStatus()
     print("X ", algorithm.best_individual.x)
