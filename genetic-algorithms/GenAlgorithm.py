@@ -1,17 +1,20 @@
 from math import *
 import random
-from individual import Individual
+from Individual import Individual
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
-class Algorithm:
+class GenAlgorithm:
 
-    def __init__(self, init_population = None, pop_size : int = 50, epochs : int = 300, auto_gen : bool = True) -> None:
+    def __init__(self, init_population = None, pop_size : int = 50, epochs : int = 300, auto_gen : bool = True, alpha : float = 0.0005) -> None:
         # Parameters:
         # init_population -> Is the first population dealt by the algorithm, defaults to None.
         # auto_gen -> If passed as True, and no init_population value is passed, then a random population will be generated for the initial population.
         # pop_size -> Integer value that defines the size of the populations to be handled.
         # epochs -> Integer value that defines the amounts of epochs (or generations) to be calculated.
+        # alpha -> Float value that defines the alpha for the mutation.
+        self.alpha = alpha
         self.generations = []
         self.pop_size = pop_size
         self.generation_times = epochs
@@ -83,7 +86,7 @@ class Algorithm:
             childA_x = self.definer(childA_x, 0.5, 0)
             childA_y = beta * parentA.y + (1 - beta) * parentB.y
             childA_y = self.definer(childA_y, 0.5, 0)
-            normX = np.random.normal(0, 0.0005)
+            normX = np.random.normal(0, self.alpha)
 
             childA_x += normX
             childA_x = self.definer(childA_x, 0.5, 0)
@@ -98,9 +101,11 @@ class Algorithm:
             childB_x = self.definer(childB_x, 0.5, 0)
             childB_y = beta * parentB.y + (1 - beta) * parentA.y
             childB_y = self.definer(childB_y, 0.5, 0)
-            childB_x += np.random.normal(0, 0.0005)
+            normX = np.random.normal(0, self.alpha)
+
+            childB_x += normX
             childB_x = self.definer(childB_x, 0.5, 0)
-            childB_y += np.random.normal(0, 0.0005)
+            childB_y += normX
             childB_y = self.definer(childB_y, 0.5, 0)
 
             childB = Individual(childB_x, childB_y)
@@ -116,16 +121,11 @@ class Algorithm:
 
         while(len(self.nxt_population) != self.pop_size):
             childs = self.crossPopulation()
-            #while(len(childs) == 0):
-            #    childs = self.crossPopulation()
-
             for child in childs:
                 if(child.getFitness() > self.best_individual.getFitness()): self.best_individual = child
                 if(child.getFitness() > self.elite.getFitness()): self.elite = child
                 if len(self.nxt_population) < self.pop_size:
                     self.nxt_population.append(child)
-
-            #print(f"Got child.{i}")
 
     def rouletteSelection(self):
         self.setPercentages()
@@ -161,4 +161,32 @@ class Algorithm:
             self.generations.append(self.population)
             self.nxt_population = []
             self.setPercentages()
+    
+    def visualize(self, n_gen : int):
+        x = [ind.x for ind in self.generations[n_gen]]
+        y = [ind.y for ind in self.generations[n_gen]]
+        plt.xlim([0, 0.5])
+        plt.ylim([0, 0.5])
+        plt.scatter(x, y)
+        plt.show()
+    
+    def animate(self, interval : int = 200):
+        gens = self.generations
+        fig = plt.figure(1)
+        ax = plt.axes(xlim=[0, 0.5], ylim=[0, 0.5])
+
+        x = [ind.x for ind in gens[0]]
+        y = [ind.y for ind in gens[0]]
+        scatter = ax.scatter(x, y)
+
+        def update(i):
+            xy = [[ind.x, ind.y] for ind in gens[i]]
+
+            scatter.set_offsets(xy)
+            fig.suptitle("Generation: "+str(i))
+
+            return scatter,
+        
+        anim = FuncAnimation(fig, update, frames=len(gens)-1, interval=interval)
+        plt.show()
 
