@@ -34,6 +34,8 @@ class GenAlgorithm:
         if auto_gen and len(self.population) == 0:
             self.generatePopulation()
             self.generations.append(self.population)
+        if (len(self.population) > 0):
+            self.population = np.array(self.population)
 
         
 
@@ -51,10 +53,10 @@ class GenAlgorithm:
             genY = random.uniform(*space)
             ind = Individual(genX, genY)
             self.population.append(ind)
+        self.population = np.array(self.population)
         self.setPercentages()
 
     def setPercentages(self):
-
         for i in range(self.pop_size):
             self.population[i].setPercentage(self.population[i].getFitness() * 100 / self.getFitSum())
 
@@ -116,16 +118,17 @@ class GenAlgorithm:
 
 
     def generateNextGeneration(self):
-
+        self.elite = self.population[0]
+        for ind in self.population:
+            if ind.getFitness() > self.elite.getFitness():
+                self.elite = ind
         self.nxt_population.append(self.elite)
-
-        while(len(self.nxt_population) != self.pop_size):
-            childs = self.crossPopulation()
-            for child in childs:
+        while(len(self.nxt_population) < self.pop_size):
+            for child in self.crossPopulation():
                 if(child.getFitness() > self.best_individual.getFitness()): self.best_individual = child
-                if(child.getFitness() > self.elite.getFitness()): self.elite = child
-                if len(self.nxt_population) < self.pop_size:
-                    self.nxt_population.append(child)
+                self.nxt_population.append(child)
+        if len(self.nxt_population) > self.pop_size:
+            self.nxt_population.pop()
 
     def rouletteSelection(self):
         self.setPercentages()
@@ -133,10 +136,8 @@ class GenAlgorithm:
         for ind in self.population:
             selectedChance = random.uniform(0, 100)
             sumChance += ind.getPercentage()
-            if ind and selectedChance < sumChance:
+            if selectedChance <= sumChance:
                 return ind
-        print("Got None")
-        return None
 
     def showIndividuals(self, amount : int = None):
         if not amount:
@@ -157,7 +158,7 @@ class GenAlgorithm:
             print(f"Generation {i}")
             if status_show: self.showIndividuals(self.pop_size)
             self.generateNextGeneration()
-            self.population = list(self.nxt_population)
+            self.population = np.array(self.nxt_population)
             self.generations.append(self.population)
             self.nxt_population = []
             self.setPercentages()
