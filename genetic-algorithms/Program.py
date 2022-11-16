@@ -3,7 +3,14 @@ from GenAlgorithm import GenAlgorithm as Algorithm
 answer = None
 
 while answer != 'p':
-    alg = Algorithm(pop_size=int(input("Tamanho da população:\n")), epochs=int(input("Gerações:\n")), alpha=float(input("Alpha:\n")))
+    pop_size = int(input("Tamanho da População:\n"))
+    epochs = int(input("Gerações:\n"))
+    alpha = input("Alpha:\n")
+    if alpha == '':
+        alpha = 0.0005
+    else:
+        alpha = float(alpha)
+    alg = Algorithm(pop_size=pop_size, epochs=epochs, alpha=alpha)
     alg.steadyRun(False)
     alg.showStatus()
     # alg.showIndividuals()
