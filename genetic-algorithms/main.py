@@ -1,8 +1,8 @@
 from GenAlgorithm import GenAlgorithm as Algorithm
 
-answer = 'run'
+answer = "run"
 
-while answer != 'stop':
+while answer != "stop":
     pop_size = int(input("Tamanho da População: \n"))
     epochs = int(input("Gerações: \n"))
     alpha = input("Alpha (enter for default):\n")
@@ -18,11 +18,13 @@ while answer != 'stop':
     alg.showStatus()
 
     # alg.showIndividuals()
-    print("Melhor indivíduo:", alg.best_individual.x, alg.best_individual.y)
+    print("Melhor indivíduo:", alg.best_individual.x, alg.best_individual.y, "FITNESS:", alg.best_individual.getFitness())
 
-    while answer != 'c' and answer != 'p':
+    answer = None
 
-        answer = input("Continuar? (p:parar, c:continuar, v:visualizar, a:animação, m:melhor)\n")
+    while answer != "run" and answer != "stop":
+
+        answer = input("Continuar? (stop:parar, run:continuar, v:visualizar, a:animação, m:melhor)\n")
 
         if answer == 'v':
             chosenGen = int(input("Escolha uma geração:\n"))
@@ -34,8 +36,8 @@ while answer != 'stop':
             vel = int(input("Velocidade (ms):\n"))
             alg.animate(vel)
         elif answer == 'm':
-            print("Melhor indivíduo:", alg.best_individual.x, alg.best_individual.y)
+            print("Melhor indivíduo:", alg.best_individual.x, alg.best_individual.y, "FITNESS:", alg.best_individual.getFitness())
             
-    if answer == 'c':
+    if answer == "run":
         answer = None
 
