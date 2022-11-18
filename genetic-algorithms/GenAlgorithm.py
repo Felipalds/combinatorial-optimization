@@ -81,9 +81,8 @@ class GenAlgorithm:
         
         beta = random.uniform(0, 1)
         cross_change_A = random.uniform(0, 1) #used is 75
-        cross_change_B = random.uniform(0, 1) #used is 75
 
-        if(cross_change_A < 0.75):
+        if(cross_change_A <= 0.75):
             childA_x = beta * parentA.x + (1 - beta) * parentB.x
             childA_x = self.definer(childA_x, 0.5, 0)
             childA_y = beta * parentA.y + (1 - beta) * parentB.y
@@ -98,7 +97,6 @@ class GenAlgorithm:
             childA = Individual(childA_x, childA_y)
             childs.append(childA)
 
-        if(cross_change_B < 0.75):
             childB_x = beta * parentB.x + (1 - beta) * parentA.x
             childB_x = self.definer(childB_x, 0.5, 0)
             childB_y = beta * parentB.y + (1 - beta) * parentA.y
@@ -112,10 +110,11 @@ class GenAlgorithm:
 
             childB = Individual(childB_x, childB_y)
             childs.append(childB)
+        else:
+            childs.append(parentA)
+            childs.append(parentB)
 
         return childs
-
-
 
     def generateNextGeneration(self):
         self.elite = self.population[0]
@@ -123,12 +122,11 @@ class GenAlgorithm:
             if ind.getFitness() > self.elite.getFitness():
                 self.elite = ind
         self.nxt_population.append(self.elite)
-        while(len(self.nxt_population) < self.pop_size):
+        for i in range(self.pop_size-1):
             for child in self.crossPopulation():
-                if(child.getFitness() > self.best_individual.getFitness()): self.best_individual = child
+                if (child.getFitness() > self.best_individual.getFitness()): self.best_individual = child
                 self.nxt_population.append(child)
-        if len(self.nxt_population) > self.pop_size:
-            self.nxt_population.pop()
+        print(len(self.nxt_population))
 
     def rouletteSelection(self):
         self.setPercentages()
@@ -153,10 +151,9 @@ class GenAlgorithm:
         print("Population size: ", self.pop_size)
         print("Total fitness: ", self.getFitSum())
 
-    def steadyRun(self, status_show : bool = True):
+    def steadyRun(self):
         for i in range(self.generation_times):
             print(f"Generation {i}")
-            if status_show: self.showIndividuals(self.pop_size)
             self.generateNextGeneration()
             self.population = np.array(self.nxt_population)
             self.generations.append(self.population)
