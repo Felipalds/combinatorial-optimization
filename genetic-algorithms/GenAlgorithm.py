@@ -7,7 +7,7 @@ from matplotlib.animation import FuncAnimation
 
 class GenAlgorithm:
 
-    def __init__(self, init_population = None, pop_size : int = 50, epochs : int = 300, auto_gen : bool = True, alpha : float = 0.0005) -> None:
+    def __init__(self, pop_size : int = 50, epochs : int = 300, alpha : float = 0.0005) -> None:
         # Parameters:
         # init_population -> Is the first population dealt by the algorithm, defaults to None.
         # auto_gen -> If passed as True, and no init_population value is passed, then a random population will be generated for the initial population.
@@ -18,26 +18,14 @@ class GenAlgorithm:
         self.generations = []
         self.pop_size = pop_size
         self.generation_times = epochs
-
-        self.population = init_population
         self.nxt_population = []
         self.fitsum = 0
         self.best_individual = Individual(0.0001, 0.0001)
         self.elite = Individual(0.0001, 0.0001)
-
-        # Defines an empty population in case of null value given
-        if not init_population:
-            self.population = []
-        else:
-            self.generations.append(init_population)
-        # Generates the initial population in case of a given null value, and selected auto_gen.
-        if auto_gen and len(self.population) == 0:
-            self.generatePopulation()
-            self.generations.append(self.population)
-        if (len(self.population) > 0):
-            self.population = np.array(self.population)
-
-        
+        self.population = []
+        self.generateFirstPopulation()
+        self.generations.append(self.population) # save first population
+        self.population = np.array(self.population)
 
     def getFitSum(self):
         self.fitsum = sum([ind.getFitness() for ind in self.population])
@@ -47,7 +35,7 @@ class GenAlgorithm:
         self.pop_size = len(array_like)
         self.population = array_like
 
-    def generatePopulation(self, space=[0, 0.5].copy()):
+    def generateFirstPopulation(self, space=[0, 0.5].copy()):
         for i in range(self.pop_size):
             genX = random.uniform(*space)
             genY = random.uniform(*space)
@@ -72,17 +60,21 @@ class GenAlgorithm:
 
         childs = []
 
+        # zoz
         parentA = self.rouletteSelection()
         parentB = self.rouletteSelection()
 
         while parentA == parentB or not parentA or not parentB:
             parentA = self.rouletteSelection()
             parentB = self.rouletteSelection()
+
+        # zoz
         
         beta = random.uniform(0, 1)
         cross_change_A = random.uniform(0, 1) #used is 75
 
         if(cross_change_A <= 0.75):
+            
             childA_x = beta * parentA.x + (1 - beta) * parentB.x
             childA_x = self.definer(childA_x, 0.5, 0)
             childA_y = beta * parentA.y + (1 - beta) * parentB.y
@@ -117,10 +109,12 @@ class GenAlgorithm:
         return childs
 
     def generateNextGeneration(self):
+        # calculate elitism
         self.elite = self.population[0]
         for ind in self.population:
             if ind.getFitness() > self.elite.getFitness():
                 self.elite = ind
+
         self.nxt_population.append(self.elite)
         for i in range(self.pop_size-1):
             for child in self.crossPopulation():
@@ -156,7 +150,7 @@ class GenAlgorithm:
             print(f"Generation {i}")
             self.generateNextGeneration()
             self.population = np.array(self.nxt_population)
-            self.generations.append(self.population)
+            self.generations.append(self.population) # save next population in array
             self.nxt_population = []
             self.setPercentages()
     

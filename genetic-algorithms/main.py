@@ -1,18 +1,22 @@
 from GenAlgorithm import GenAlgorithm as Algorithm
 
-answer = None
+answer = 'run'
 
-while answer != 'p':
-    pop_size = int(input("Tamanho da População:\n"))
-    epochs = int(input("Gerações:\n"))
-    alpha = input("Alpha:\n")
+while answer != 'stop':
+    pop_size = int(input("Tamanho da População: \n"))
+    epochs = int(input("Gerações: \n"))
+    alpha = input("Alpha (enter for default):\n")
+
     if alpha == '':
         alpha = 0.05
     else:
         alpha = float(alpha)
-    alg = Algorithm(pop_size=pop_size, epochs=epochs, alpha=alpha)
-    alg.steadyRun(False)
+
+
+    alg = Algorithm(pop_size, epochs, alpha)
+    alg.steadyRun() # main function
     alg.showStatus()
+
     # alg.showIndividuals()
     print("Melhor indivíduo:", alg.best_individual.x, alg.best_individual.y)
 
