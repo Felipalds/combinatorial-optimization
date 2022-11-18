@@ -7,7 +7,7 @@ while answer != 'p':
     epochs = int(input("Gerações:\n"))
     alpha = input("Alpha:\n")
     if alpha == '':
-        alpha = 0.0005
+        alpha = 0.05
     else:
         alpha = float(alpha)
     alg = Algorithm(pop_size=pop_size, epochs=epochs, alpha=alpha)
