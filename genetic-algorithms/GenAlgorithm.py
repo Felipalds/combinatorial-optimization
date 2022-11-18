@@ -151,10 +151,9 @@ class GenAlgorithm:
         print("Population size: ", self.pop_size)
         print("Total fitness: ", self.getFitSum())
 
-    def steadyRun(self, status_show : bool = True):
+    def steadyRun(self):
         for i in range(self.generation_times):
             print(f"Generation {i}")
-            if status_show: self.showIndividuals(self.pop_size)
             self.generateNextGeneration()
             self.population = np.array(self.nxt_population)
             self.generations.append(self.population)
