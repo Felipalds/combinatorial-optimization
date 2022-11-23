@@ -1,9 +1,4 @@
 # Genetic Algorithms
-
-- Charles Darwin
-- Aleatoriedade!
-- Gene vantajoso é transmitido
-
 ## Código:
 - Codificação
 - Busca
