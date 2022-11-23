@@ -60,14 +60,6 @@ class GenAlgorithm:
         for i in range(self.pop_size):
             self.population[i].setPercentage(self.population[i].getFitness() * 100 / self.getFitSum())
 
-    def definer(self, value, M, m):
-        if value > M:
-            return M
-        elif value < m:
-            return M
-        else:
-            return value
-
     def crossPopulation(self) -> list[Individual]:
 
         childs = []
@@ -83,34 +75,18 @@ class GenAlgorithm:
         cross_change_A = random.uniform(0, 1) #used is 75
 
         if(cross_change_A <= 0.75):
-            childA_x = beta * parentA.x + (1 - beta) * parentB.x
-            childA_x = self.definer(childA_x, 0.5, 0)
-            childA_y = beta * parentA.y + (1 - beta) * parentB.y
-            childA_y = self.definer(childA_y, 0.5, 0)
-            normX = np.random.normal(0, self.alpha)
-
-            childA_x += normX
-            childA_x = self.definer(childA_x, 0.5, 0)
-            childA_y += normX
-            childA_y = self.definer(childA_y, 0.5, 0)
-
-            childA = Individual(childA_x, childA_y)
+            childA = Individual(0.2, 0.2)
+            childA.cross(parentA, parentB, beta)
+            childA.mutate(self.alpha)
             childs.append(childA)
 
-            childB_x = beta * parentB.x + (1 - beta) * parentA.x
-            childB_x = self.definer(childB_x, 0.5, 0)
-            childB_y = beta * parentB.y + (1 - beta) * parentA.y
-            childB_y = self.definer(childB_y, 0.5, 0)
-            normX = np.random.normal(0, self.alpha)
-
-            childB_x += normX
-            childB_x = self.definer(childB_x, 0.5, 0)
-            childB_y += normX
-            childB_y = self.definer(childB_y, 0.5, 0)
-
-            childB = Individual(childB_x, childB_y)
+            childB = Individual(0.2, 0.2)
+            childB.cross(parentA, parentB, beta)
+            childB.mutate(self.alpha)
             childs.append(childB)
         else:
+            parentA.mutate(self.alpha)
+            parentB.mutate(self.alpha)
             childs.append(parentA)
             childs.append(parentB)
 
