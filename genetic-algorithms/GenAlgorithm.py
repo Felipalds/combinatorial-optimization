@@ -126,6 +126,8 @@ class GenAlgorithm:
             for child in self.crossPopulation():
                 if (child.getFitness() > self.best_individual.getFitness()): self.best_individual = child
                 self.nxt_population.append(child)
+        while len(self.nxt_population) > self.pop_size:
+            self.nxt_population.pop()
 
     def rouletteSelection(self):
         self.setPercentages()
@@ -134,6 +136,7 @@ class GenAlgorithm:
             selectedChance = random.uniform(0, 100)
             sumChance += ind.getPercentage()
             if selectedChance <= sumChance:
+                print(len(self.population))
                 return ind
 
     def showIndividuals(self, amount : int = None):
