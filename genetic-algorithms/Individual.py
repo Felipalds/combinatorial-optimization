@@ -1,5 +1,7 @@
 from math import *
 import numpy as np
+import random
+
 class Individual:
 
     def __init__(self, x, y) -> None:
@@ -37,11 +39,15 @@ class Individual:
         self.setFitness()
 
     def mutate(self, alpha):
-        print("Mutating")
-        normX = np.random.normal(0, alpha)
-        self.x += normX
-        self.x = self.definer(self.x, 0.5, 0)
-        self.y += normX
-        self.y = self.definer(self.y, 0.5, 0)
+        p = random.uniform(0, 1)
+        if p < 0.05:
+            print("Mutating")
+            normX = np.random.normal(0, alpha)
+            self.x += normX
+            self.x = self.definer(self.x, 0.5, 0)
+            self.y += normX
+            self.y = self.definer(self.y, 0.5, 0)
+        else:
+            print("Not mutating")
         self.setFitness()
 
