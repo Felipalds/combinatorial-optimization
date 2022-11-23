@@ -1,4 +1,14 @@
 # Genetic Algorithms
+
+## How to run the project:
+1. Install numpy and matplotlib with - pip3 install numpy matplotlib
+2. Run the "Program.py" file with - python3 Program.py
+3. Choose the size of each population
+4. Choose how many generations there will be
+5. Wait for the genetic algorithm
+6. Choose v to visualize the graphics
+7. Choose a to see the animation of all generations and then choose how much time each frame will have
+8. Choose m to see the best generation
 ## Código:
 - Codificação
 - Busca

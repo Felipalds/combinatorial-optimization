@@ -7,14 +7,14 @@ from matplotlib.animation import FuncAnimation
 
 class GenAlgorithm:
 
-    def __init__(self, init_population = None, pop_size : int = 50, epochs : int = 300, auto_gen : bool = True, alpha : float = 0.0005) -> None:
+    def __init__(self, init_population = None, pop_size : int = 50, epochs : int = 300, auto_gen : bool = True) -> None:
         # Parameters:
         # init_population -> Is the first population dealt by the algorithm, defaults to None.
         # auto_gen -> If passed as True, and no init_population value is passed, then a random population will be generated for the initial population.
         # pop_size -> Integer value that defines the size of the populations to be handled.
         # epochs -> Integer value that defines the amounts of epochs (or generations) to be calculated.
         # alpha -> Float value that defines the alpha for the mutation.
-        self.alpha = alpha
+        self.alpha = 0.0005
         self.generations = []
         self.pop_size = pop_size
         self.generation_times = epochs
