@@ -131,7 +131,7 @@ class GenAlgorithm:
     def rouletteSelection(self):
         self.setPercentages()
         sumChance = 0
-        for ind in self.population:
+        for ind in self.population[:self.pop_size]:
             selectedChance = random.uniform(0, 100)
             sumChance += ind.getPercentage()
             if selectedChance <= sumChance:
