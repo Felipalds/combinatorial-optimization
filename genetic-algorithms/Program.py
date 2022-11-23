@@ -22,7 +22,7 @@ while answer != 'p':
             except IndexError:
                 print("Geração '"+str(chosenGen)+"' não existe (fora de alcançe).")
         elif answer == 'a':
-            vel = int(input("Velocidade (ms):\n"))
+            vel = int(input("Velocidade de cada frame (ms):\n"))
             alg.animate(vel)
         elif answer == 'm':
             print("Melhor indivíduo:", alg.best_individual.x, alg.best_individual.y)
